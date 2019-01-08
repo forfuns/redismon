@@ -25,14 +25,13 @@ redismon部署
 --------------------------
 1 目录解压到/path/to/redismon
 
-2 配置 falcon Push 地址 和 endpoint名称
+2 复制配置 cp /path/to/conf/config.conf.example /path/to/conf/config.conf
 
-falcon_client: http://192.168.0.101:11988/v1/push
-endpoint: dev0_redis
+3 修改 修改对应的配置信息
+ - `falcon_client` open-falcon Push接口
+ - `endpoint` endpoint名称
+ - `items` Redis多实例信息,`cluster_name`redis集群名,`address`redis地址,`password`redis密码,`port`redis端口
 
-3 配置当前服务器的Redis多实例信息,/path/to/redismon/conf/redismon.conf 每行items记录一个实例: 集群名，地址,密码，端口
-
-- {cluster_name: cluster_1, address: 'host', password: '', port: 6379}
 
 4 配置crontab, 修改redismon_cron文件中redismon安装path; cp redismon_cron /etc/cron.d/
 
