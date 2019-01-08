@@ -1,0 +1,5 @@
+falcon_client: http://192.168.0.101:1988/v1/push
+endpoint: dev0_redis
+items:
+- {cluster_name: dev0, address: '192.168.0.100', password: '', port: 6379}
+# - {cluster_name: cluster_1, address:'localhost', password: '123', port: 6388}

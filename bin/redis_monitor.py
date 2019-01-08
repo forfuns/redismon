@@ -111,7 +111,7 @@ class RedisFalconMonitor(object):
 
 def main():
     # redis_hostname = socket.gethostname()
-    f = open("../conf/redismon.conf")
+    f = open("../conf/config.conf")
     y = yaml.load(f)
     f.close()
     redis_items = y["items"]
