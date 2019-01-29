@@ -30,6 +30,7 @@ redismon部署
 3 修改 修改对应的配置信息
  - `falcon_client` open-falcon Push接口
  - `endpoint` endpoint名称
+ - `tags` 可自定义tags
  - `items` Redis多实例信息,`cluster_name`redis集群名,`address`redis地址,`password`redis密码,`port`redis端口
 
 
