@@ -15,6 +15,7 @@ from redis_cluster import RedisClusterInfo
 from redis_slowlog import RedisSlowLog
 
 falcon_client = "http://127.0.0.1:1988/v1/push"
+tags = ""
 upload_ts = int(time.time())
 calculate_metric_dict = {
     "total_connections_received": "COUNTER",
@@ -41,7 +42,7 @@ class RedisFalconMonitor(object):
         self.addr = addr
         self.port = port
         self.password = password
-        self.tags = "redis=" + str(port) + "_" + cluster_name
+        self.tags = "redis=" + str(port) + "_" + cluster_name + "," + tags
         self.cluster_name = cluster_name
         self.endpoint = endpoint
         logging.config.fileConfig("../conf/logging.ini")
@@ -99,12 +100,14 @@ class RedisFalconMonitor(object):
         for info_key in redis_info_dict.keys():
             # 计算的key, 采用COUNTER, 注意cmdstat开头的命令
             calculate_keys = calculate_metric_dict.keys()
+            counterType = "GAUGE"
             if (info_key in calculate_keys or re.match("^cmdstat", info_key)):
-                key_item_dict = {"endpoint": self.endpoint, "metric": info_key, "tags": self.tags, "timestamp": upload_ts,
-                                 "value": redis_info_dict[info_key], "step": 60, "counterType": "COUNTER"}
-            else:
-                key_item_dict = {"endpoint": self.endpoint, "metric": info_key, "tags": self.tags, "timestamp": upload_ts,
-                                 "value": redis_info_dict[info_key], "step": 60, "counterType": "GAUGE"}
+                counterType = "COUNTER"
+
+            key_item_dict = {"endpoint": self.endpoint, "metric": info_key, "tags": self.tags, "timestamp": upload_ts,
+                             "value": redis_info_dict[info_key], "step": 60, "counterType": counterType}
+
+
             redis_update_list.append(key_item_dict)
         r = requests.post(falcon_client, data=json.dumps(redis_update_list))
 
@@ -116,10 +119,13 @@ def main():
     f.close()
     redis_items = y["items"]
 
-    global falcon_client
+    global falcon_client, tags
 
     if "falcon_client" in y:
         falcon_client = y["falcon_client"]
+
+    if "tags" in y:
+        tags = str(y["tags"]).replace("'", "").replace("{", "").replace("}", "").replace(":", "=")
 
     for redis_ins in redis_items:
         redis_address = redis_ins['address']
